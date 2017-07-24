@@ -17,7 +17,11 @@ Game.Preloader.prototype = {
 		this.load.tilemap('PlatLayer','assets/platform102_Tile Layer 2.csv');
 		
 		this.load.tilemap('coinsLayer','assets/platform102_Tile Layer 3.csv');
+		
+
 		this.load.image('tileset','assets/tiles.png');
+		
+		//this.load.image('coins','assets/coinGold.png');
 		this.load.spritesheet('player','assets/player_spritesheet.png',28,30,5,1,1);
 		
 		this.load.spritesheet('buttons','assets/buttons.png',193,71);

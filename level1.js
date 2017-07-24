@@ -12,7 +12,18 @@ EnemySnail = function(index,game,x,y){
 		x: this.snail.x + 50
 	},2000,'Linear',true,0,100,true);
 	
+};
+var coinscollector ={
+	coinsadd:function(obj1,obj2){
+		mapc.putTile(-1,Groundlayer.getTileX(player.x),Groundlayer.getTileY(player.y));
+		if(!obj1.hasTriggered || !obj2.hasTriggered){
+			obj1.hasTriggered = obj2.hasTriggered = true;
+			
+			coinscount++;
+		}		
+	}
 }
+
 Game.level1 = function(game){};
 
 var mapg;
@@ -28,11 +39,13 @@ var controls=[];
 var playerSpeed = 100;
 var jumpTimer = 0;
 var button;
-var coins=0;
 var called = false;
 
 Game.level1.prototype = {
 	create:function(game){
+		coinscount=0;
+
+		
 		button = this.add.button(600,this.world.Y,'buttons',function(){
 			console.log('pressed');
 		},this,2,1,0);
@@ -56,14 +69,15 @@ Game.level1.prototype = {
 		//paltformLayer.resizeWorld();
 		mapg.setCollisionBetween(0,4);
 		mapp.setCollisionBetween(0,4);
-		mapc.setCollisionBetween(0,4);
+		//mapc.setCollisionBetween(0,6);
 			
 		mapg.setTileIndexCallback(5,this.gameover,this);
 		mapp.setTileIndexCallback(5,this.gameover,this);
-		mapg.setTileIndexCallback(6,this.coins,this);
 		
-		mapc.setTileIndexCallback(6,this.coins,this);
-		/*mapp.setTileIndexCallback(4,this.coins1,this);*/
+		this.game.physics.arcade.enable(coinsLayer);
+		mapc.setTileIndexCallback(6,coinscollector.coinsadd,this);
+		
+		
 		
 		player = this.add.sprite(100,250,'player');
 		player.scale.setTo(1.5,1.5);
@@ -74,13 +88,13 @@ Game.level1.prototype = {
 		player.body.collideWorldBounds = true;
 
 		
-		textBox = this.add.text(20,20,"COINS: "+coins);
+		textBox = this.add.text(20,20,"COINS: "+coinscount);
 	textBox.fixedToCamera = true;
 		
 		snail1 = new EnemySnail(0,game,400,this.world.height - 142);
 		
-		//snail1 = new EnemySnail(0,game,400,100);
 		
+				
 	},
 	
 	update:function(){
@@ -94,6 +108,7 @@ Game.level1.prototype = {
 		this.physics.arcade.collide(player,Groundlayer);
 		this.physics.arcade.collide(player,platformLayer);
 		
+		this.physics.arcade.collide(player,coinsLayer,this.coinsadd,null,this);
 		
 		if(jumpbutton.isDown && jumpTimer < 2){
 			jumpTimer = jumpTimer + 1;
@@ -127,25 +142,28 @@ Game.level1.prototype = {
 			jumpTimer = 0;
 		}  
 		
-		
+		textBox.setText("COINS: "+coinscount);
 	},
 	
 	gameover:function(){
 		player.reset(100,250);
 	},
 	
-	/*coins1:function(){
+	coins1:function(){
 		if(this.body.checkCollision.down){
 			alert('BANK');
 		}
 		if(player.body.touching.up){
 			this.physics.arcade.collide(player,this);
 		}
-	},*/
-	coins:function(){
-		mapg.putTile(-1,Groundlayer.getTileX(player.x),Groundlayer.getTileY(player.y));
-		called = true;
-	
 	},
+	coinsadd:function(obj1,obj2){
+		
+		if(!obj1.hasTriggered && !obj2.hasTriggered){
+			obj1.hasTriggered = obj2.hasTriggered = true;
+			mapc.putTile(-1,Groundlayer.getTileX(player.x),Groundlayer.getTileY(player.y));
+			coinscount++;
+		}		
+	}
 	
 };
